@@ -65,9 +65,6 @@ We evaluate De<sup>3</sup>C on three multimodal medical datasets:
 | Harvard30k-AMD | AMD grading | SLO fundus + OCT | [Dataset](https://yutianyt.com/projects/fairvision30k/) |
 | MM-ECG | Cardiac rhythm classification | 1D ECG + 2D ECG image | [MIMIC-IV-ECG](https://physionet.org/content/mimic-iv-ecg/1.0/) / [ECGInstruct](https://huggingface.co/datasets/PULSE-ECG/ECGInstruct) |
 
-> We provide **MM-ECG** as the example implementation for reproduction and evaluation. The ophthalmic datasets are listed for reference; their training entry points are not included.
-
-MM-ECG uses paired ECG signals and images for three-class classification (atrial fibrillation, sinus bradycardia, and sinus tachycardia). The original patient-disjoint split contains 7,035 training pairs and 1,759 testing pairs. Synthetic noise is applied only to training labels.
 
 Prepare the paired NumPy arrays and metadata in the following format:
 
@@ -93,8 +90,6 @@ The target environment is Python 3.8 and PyTorch 1.13.0. Install the dependencie
 ```bash
 pip install -r requirements.txt
 ```
-
-For GPU training, install the appropriate CUDA-compatible PyTorch build for your system. The requirements file describes the target environment, not a verified lockfile for the original machine.
 
 ---
 
@@ -128,22 +123,6 @@ Set `--noise-rate` to `0.4` or `0.5` for other noise levels. To run all three no
 ```bash
 bash run_ecg.sh --data-root data/MM-ECG --gpu 0
 ```
-
-The original MM-ECG experiment configuration uses 200 epochs, batch size 32, seed 42, DDC threshold 0.6, CCC threshold 0.8, a three-epoch warm-up and CCC starting at epoch 25 (zero-indexed). The image encoder learning rate is 1e-6; the ECG encoder and classifier learning rates are 1e-4. See [REPRODUCIBILITY.md](REPRODUCIBILITY.md) for details and known differences from the manuscript description.
-
-Module-level ablations are supported via `--variant`:
-
-| Variant | Description |
-|---|---|
-| `full` | Complete De<sup>3</sup>C |
-| `no_ddc` | Without DDC and its dependent feedback |
-| `no_ccc` | Without CCC and its dependent feedback |
-| `no_feedback` | Without reliability-constrained feedback |
-| `no_reliability` | Without the additional reliability mechanisms; retains original DDC and CCC |
-
-Use `--help` for adjustable thresholds, loss coefficients, learning rates, and reliability parameters. Training saves logs, evaluation metrics, diagnostic statistics and final model weights in the generated run directory.
-
----
 
 ## Acknowledgement and Contact
 
