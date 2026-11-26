@@ -3,7 +3,6 @@
 <p align="center">
   <img src="https://img.shields.io/badge/Python-3.8-blue" alt="Python 3.8">
   <img src="https://img.shields.io/badge/PyTorch-1.13.0-red" alt="PyTorch 1.13.0">
-  <img src="https://img.shields.io/badge/License-MIT-green" alt="MIT">
   <img src="https://img.shields.io/badge/Task-Multimodal%20Diagnosis-orange" alt="Multimodal Diagnosis">
   <img src="https://img.shields.io/badge/Learning-Noisy%20Label-purple" alt="Noisy Label Learning">
 </p>
@@ -12,7 +11,7 @@
 
 ## News
 
-- **[2026.11]** Implementation of **De<sup>3</sup>C** prepared for release.
+- **[2026.11]** The implementation of **De<sup>3</sup>C** is prepared for release.
 
 ---
 
@@ -29,7 +28,6 @@ The main contributions include:
 - **Debiased Distribution Calibration (DDC):** mitigates class-dependent selection bias through distribution calibration and complementary modality-specific evidence.
 - **Cross-Modal Consistency Correction (CCC):** recovers informative supervision from unselected samples using high-confidence agreement between modality-specific and fused predictions, with reliability-weighted correction.
 - **Reliability-constrained Feedback Mechanism (RFM):** incorporates highly confident and temporally stable correction evidence into subsequent sample selection.
-- **Robust Multimodal Noisy-Label Learning:** supports different label noise rates and module-level ablations.
 
 ---
 
@@ -43,9 +41,9 @@ The overall framework contains two key modules and a collaborative feedback mech
 
 1. **Debiased Distribution Calibration**
    - Tracks class-wise prediction statistics through an exponential moving average (EMA).
-   - Calibrates fused predictions and incorporates modality-specific counter-evidence to identify reliable observed labels.
+   - Calibrates fused predictions and incorporates modality-specific evidence to identify reliable observed labels.
 2. **Cross-Modal Consistency Correction**
-   - Exploits high-confidence agreement between any two of the three prediction branches.
+   - Exploits high-confidence agreement among modality-specific and fused predictions.
    - Refines potentially corrupted labels and weights correction supervision according to predictive reliability.
 3. **Reliability-constrained Feedback**
    - Collects stable, high-confidence correction evidence.
@@ -63,9 +61,6 @@ We evaluate De<sup>3</sup>C on three multimodal medical datasets:
 | Harvard30k-AMD | AMD grading | SLO fundus + OCT | [Dataset](https://yutianyt.com/projects/fairvision30k/) |
 | MM-ECG | Cardiac rhythm classification | 1D ECG + 2D ECG image | [MIMIC-IV-ECG](https://physionet.org/content/mimic-iv-ecg/1.0/) / [ECGInstruct](https://huggingface.co/datasets/PULSE-ECG/ECGInstruct) |
 
-
-Prepare the paired NumPy arrays and metadata in the following format:
-
 ```text
 data/MM-ECG/
 ├── final_report_with_mapping_with_ecg_new.csv
@@ -75,52 +70,48 @@ data/MM-ECG/
     └── <sample>.npy
 ```
 
-The CSV requires `id`, `image`, `answer_text_mapped` (A/B/C), and `ecg_npy_new` (or `ecg_path`). It must also contain patient identifiers (`patient_id` or `subject_id`, or a recognizable patient ID in the source paths). The loader resolves array filenames and resizes images to 224 × 224; ECG arrays must represent 12 leads × 1,000 time points. The patient-level split is generated with seed 42 and exported to `splits/` under the data root.
-
-See [DATA.md](DATA.md) for the exact input contract. The source links above do not contain the preprocessed MM-ECG subset in this exact layout. Obtain authorized access and prepare the paired subset before training; no medical data or patient manifests are redistributed here.
-
 ---
 
 ## Requirements
 
-The target environment is Python 3.8 and PyTorch 1.13.0. Install the dependencies with:
+The target environment is Python 3.8 and PyTorch 1.13.0. Install the main dependencies:
 
 ```bash
-pip install -r requirements.txt
+pip install torch==1.13.0 torchvision==0.14.0 numpy==1.23.5 pandas==1.5.3 scikit-learn==1.2.2
 ```
 
 ---
 
 ## Quick Start
 
-A data-free forward/backward check of all three training stages:
+The main components are organized as follows:
 
-```bash
-python train_dec3_ecg_resnet1d_resnet50_ccc_vote.py --smoke-test --device cpu
+```text
+De3C/
+├── De3C.py
+├── main.py
+├── dataloader_ECG.py
+├── dependency_ECG.py
+└── utils_ECG.py
 ```
 
-Check your prepared dataset:
-
 ```bash
-python dataloader_ECG.py --data-root data/MM-ECG
+python main.py --help
 ```
 
 ---
 
 ## Usage
 
-Run the main training program with the complete De<sup>3</sup>C framework:
+Run the main training program using Python:
 
 ```bash
-python train_dec3_ecg_resnet1d_resnet50_ccc_vote.py \
-  --data-root data/MM-ECG --variant full --noise-rate 0.3 --gpu 0
+python main.py --data-root data/MM-ECG --noise-rate 0.3 --device cuda:0
 ```
 
-Set `--noise-rate` to `0.4` or `0.5` for other noise levels. To run all three noise rates sequentially:
+Set `--noise-rate` to `0.4` or `0.5` for other label noise levels.
 
-```bash
-bash run_ecg.sh --data-root data/MM-ECG --gpu 0
-```
+---
 
 ## Acknowledgement and Contact
 
