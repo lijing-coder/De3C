@@ -1,5 +1,3 @@
-# De3C
-This paper is submitted to MedIA.
 # De<sup>3</sup>C: Debiased Cross-Modal Consistency Correction with Reliability-Aware Collaboration for Multimodal Medical Noisy-Label Learning
 
 <p align="center">
