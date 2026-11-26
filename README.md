@@ -14,7 +14,7 @@ This paper is submitted to MedIA.
 
 ## News
 
-- **[2026.11]** MM-ECG implementation of **De<sup>3</sup>C** prepared for release.
+- **[2026.11]** Implementation of **De<sup>3</sup>C** prepared for release.
 
 ---
 
