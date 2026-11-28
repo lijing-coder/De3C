@@ -118,5 +118,3 @@ Set `--noise-rate` to `0.4` or `0.5` for other label noise levels.
 We thank the authors of MMC-AMD, Harvard-FairVision, MIMIC-IV-ECG, ECGInstruct and ResNet for their valuable contributions to the research community.
 
 For any questions, feel free to contact: [Jing.Li2@liverpool.ac.uk](mailto:Jing.Li2@liverpool.ac.uk).
-
-This implementation is intended for research use, not clinical deployment.
